@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+    <title>SeatFreak</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <style>
+        body         { padding-top:80px; }
+        .jumbotron   { margin-top:-100px;
+                       height:120px; 
+                       text-align:left; }
+        form         { border: 3px solid black; 
+                       padding: 5px; }
+        button       { display: block;
+                       margin: 0 auto; }
+        .explain     { background-color: lightgray; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="jumbotron text-center">
+        <h2 class="text-left" style="display:inline;">SeatFreak</h2>
+        <img src="../assets/images/seatv1.png" height="42" width="42">
+        <span class="text-left"><em>   Seat... better!</em></span>
+    </div>
+    <div class="row explain">
+        <h2 style="text-align:center;">Welcome to SeatFreak, a helpful tool for charting seating.<br>Please sign in to browse your charts<br>or create an account to get started.</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h1><span class="fa fa-sign-in"></span> Signup</h1>
+
+            <!-- SIGNUP FORM -->
+            <form action="/signup" method="post">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="text" class="form-control" name="email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" name="password">
+                </div>
+
+                <button type="submit" class="btn btn-warning btn-lg">Signup</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h1><span class="fa fa-sign-in"></span> Login</h1>
+
+            <!-- LOGIN FORM -->
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="text" class="form-control" name="email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" name="password">
+                </div>
+
+                <button type="submit" class="btn btn-warning btn-lg">Login</button>
+            </form>
+        </div>
+
+</div>
+</body>
+</html>

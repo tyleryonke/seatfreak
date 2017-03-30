@@ -1,0 +1,53 @@
+h1 {
+    margin-top: 10px;
+    display: inline;
+}
+
+hr {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.panel-title {
+    display: inline;
+}
+
+.panel-body {
+    padding: 5px;
+}
+
+.top-tier {
+    height: 130px;
+    overflow-y: scroll;
+}
+
+.bot-tier {
+    height: 240px;
+    overflow-y: scroll;
+}
+
+#edit-placeholder {
+    text-align: center;
+    vertical-align: middle;
+    line-height: 120px;
+    margin: auto;
+}
+
+.jumbotron {
+    height: 120px;
+}
+
+.btn-primary {
+    height: 25px;
+    width: 25px;
+    line-height: 0px;
+    padding-left: 7px;
+}
+
+.saver {
+    width: 49px;
+}
+
+.deleter {
+    margin-top: -30px;
+}
