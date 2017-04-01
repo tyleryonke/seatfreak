@@ -5,6 +5,9 @@
     "build": "webpack --config webpack.config.js",
     "heroku-postbuild": "webpack -p --config ./webpack.config.js --progress"
   },
+  "engines": {
+    "node": "4.5.0"
+  },
   "dependencies": {
     "axios": "^0.12.0",
     "bcrypt-nodejs": "latest",
