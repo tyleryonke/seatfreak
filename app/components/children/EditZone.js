@@ -243,6 +243,7 @@ var EditZone = React.createClass({
         <div className="panel-body text-center top-tier scroller">
             <div className="tableViewText">
                 <p id="tableViewName">{table.name}</p>
+                <p id="tableViewTrait">Trait: {table.trait}</p>
                 <p>People ({table.people.length}):</p>
                 {this.renderTablePeople(table)}
             </div>

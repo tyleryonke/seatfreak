@@ -20,6 +20,11 @@ div.tableViewText p {
     line-height: 10px;
 }
 
+#tableViewTrait {
+    font-size: 20px;
+    line-height: 20px;
+}
+
 #tableViewName {
     font-size: 25px;
     line-height: 25px;
