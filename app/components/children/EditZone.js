@@ -12,7 +12,7 @@ var PersonList = require("./PersonList");
 var EditZone = React.createClass({
   getInitialState: function() {
       return(
-         { name: "", people: "", trait: "", firstName: "", lastName: "", table: "", tables: "" }
+         { savedProjects: [], savedTables: [], name: "", people: "", trait: "", firstName: "", lastName: "", table: "", tables: "" }
       );
   },
 
@@ -20,6 +20,10 @@ var EditZone = React.createClass({
     const newState = {};
     newState[event.target.id] = event.target.value;
     this.setState(newState);
+  },
+
+  componentWillReceiveProps: function() {
+      this.saveTableOptions();
   },
 
   handleProjectSubmit: function(event) {
@@ -63,11 +67,11 @@ var EditZone = React.createClass({
   renderEmpty: function() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">
+        <div id="headback" className="panel-heading">
           <h3 className="panel-title text-center">Viewer</h3>
         </div>
-        <div className="panel-body text-center top-tier">
-          <h1>SELECT A PROJECT/PERSON/TABLE TO VIEW</h1>
+        <div className="panel-body text-center top-tier scroller">
+          <h1 id="emptyText">Select a Project to view Tables/People<br />then click Tables/People for info<br />or the Plus sign to add more!</h1>
         </div>
       </div>
     );
@@ -75,14 +79,14 @@ var EditZone = React.createClass({
   renderProjectEditor: function() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">
+        <div id="headback" className="panel-heading">
           <h3 className="panel-title text-center">Viewer</h3>
         </div>
-        <div className="panel-body text-center top-tier">
+        <div className="panel-body text-center top-tier scroller">
           <form onSubmit={this.handleProjectSubmit}>
             <div className="form-group">
               <h4 className="">
-                <strong>Project</strong>
+                <strong>New Project</strong>
               </h4>
               <input
                 placeholder="Name"
@@ -97,8 +101,7 @@ var EditZone = React.createClass({
                 className="btn btn-primary saver"
                 type="submit"
               >
-                Save
-              </button>
+              <i className="fa fa-check-square" aria-hidden="true"></i><span>    Save</span></button>
             </div>
           </form>
         </div>
@@ -109,14 +112,14 @@ var EditZone = React.createClass({
   renderPersonEditor: function() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">
+        <div id="headback" className="panel-heading">
           <h3 className="panel-title text-center">Viewer</h3>
         </div>
-        <div className="panel-body text-center top-tier">
+        <div className="panel-body text-center top-tier scroller">
           <form onSubmit={this.handlePersonSubmit}>
             <div className="form-group">
               <h4 className="">
-                <strong>Person</strong>
+                <strong>New Person</strong>
               </h4>
               <input
                 placeholder="First Name"
@@ -127,7 +130,6 @@ var EditZone = React.createClass({
                 onChange={(event) => this.handleUpdateTextInput(event)}
                 required
               />
-              <br />
               <input
                 placeholder="Last Name"
                 type="text"
@@ -137,7 +139,6 @@ var EditZone = React.createClass({
                 onChange={(event) => this.handleUpdateTextInput(event)}
                 required
               />
-              <br />
               <input
                 placeholder="Trait"
                 type="text"
@@ -146,37 +147,46 @@ var EditZone = React.createClass({
                 defaultValue={this.state.trait}
                 onChange={(event) => this.handleUpdateTextInput(event)}
               />
-              <br />
-              <input list="tableList" placeholder="Table" id="table" className="form-control text-center" defaultValue={this.state.table} onChange={(event) => this.handleUpdateTextInput(event)} />
-                <datalist id="tableList">
-                    <option value="Table 1" />
-                    <option value="Table 2" />
-                </datalist>
-              <br />
+              <select id="table" defaultValue="" onChange={(event) => this.handleUpdateTextInput(event)}>
+                    <option value="" disabled>Table</option>
+                    {
+                    this.state.savedTables.map(function(table, index) {
+                        return <option key={index}
+                        value={table.name}>{table.name}</option>;
+                    })
+                    }
+              </select>
               <button
                 className="btn btn-primary saver"
                 type="submit"
               >
-                Save
-              </button>
+              <i className="fa fa-check-square" aria-hidden="true"></i><span>    Save</span></button>
             </div>
           </form>
         </div>
       </div>
     );
   },
+
+  saveTableOptions: function() {
+
+      helpers.getSavedTables(this.props.project).then(function(tableData) {
+                this.setState({ savedTables: tableData.data });
+                console.log("saved results", tableData.data);
+      }.bind(this));
+  },
   // Here we render the function
   renderTableEditor: function() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">
+        <div id="headback" className="panel-heading">
           <h3 className="panel-title text-center">Viewer</h3>
         </div>
-        <div className="panel-body text-center top-tier">
+        <div className="panel-body text-center top-tier scroller">
           <form onSubmit={this.handleTableSubmit}>
             <div className="form-group">
               <h4 className="">
-                <strong>Table</strong>
+                <strong>New Table</strong>
               </h4>
               <input
                 placeholder="Name"
@@ -187,7 +197,6 @@ var EditZone = React.createClass({
                 onChange={(event) => this.handleUpdateTextInput(event)}
                 required
               />
-              <br />
               <input
                 placeholder="Trait"
                 type="text"
@@ -196,18 +205,59 @@ var EditZone = React.createClass({
                 defaultValue={this.state.trait}
                 onChange={(event) => this.handleUpdateTextInput(event)}
               />
-              <br />
               <button
                 className="btn btn-primary saver"
                 type="submit"
               >
-                Save
-              </button>
+              <i className="fa fa-check-square" aria-hidden="true"></i><span>    Save</span></button>
             </div>
           </form>
         </div>
       </div>
     );
+  },
+  renderPersonViewer: function() {
+    var person = this.props.person;
+    return (
+      <div className="panel panel-default">
+        <div id="headback" className="panel-heading">
+          <h3 className="panel-title text-center">Viewer</h3>
+        </div>
+        <div className="panel-body text-center top-tier scroller">
+            <div className="personViewText">
+                <p>{person.firstName} {person.lastName}</p>
+                <p>Trait: {person.trait}</p>
+                <p>Table: {person.table}</p>
+            </div>
+        </div>
+      </div>
+    );
+  },
+  renderTableViewer: function() {
+    var table = this.props.table;
+    return (
+      <div className="panel panel-default">
+        <div id="headback" className="panel-heading">
+          <h3 className="panel-title text-center">Viewer</h3>
+        </div>
+        <div className="panel-body text-center top-tier scroller">
+            <div className="tableViewText">
+                <p id="tableViewName">{table.name}</p>
+                <p>People ({table.people.length}):</p>
+                {this.renderTablePeople(table)}
+            </div>
+        </div>
+      </div>
+    );
+  },
+  renderTablePeople: function(table) {
+    return table.people.map(function(person, index) {
+        return (
+            <div key={index}>
+                <p>{person.firstName} {person.lastName}</p>
+            </div>
+        );
+    })
   },
   // Here we render the function
   render: function() {
@@ -219,6 +269,12 @@ var EditZone = React.createClass({
     }
     else if (this.props.mode == "table") {
         return this.renderTableEditor();
+    }
+    else if (this.props.mode == "personViewer") {
+        return this.renderPersonViewer();
+    }
+    else if (this.props.mode == "tableViewer") {
+        return this.renderTableViewer();
     }
     else {
         return this.renderEmpty();

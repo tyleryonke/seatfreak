@@ -8,8 +8,18 @@ var helpers = require("../utils/helpers");
 var TableList = React.createClass({
 
   getInitialState: function() {
-    return { savedTables: [] };
+    return { savedTables: [], lastTask: "" };
   },
+
+  componentWillReceiveProps: function(nextProps) {
+    if(JSON.stringify(this.props) !== JSON.stringify(nextProps))
+        {
+            helpers.getSavedTables(nextProps.projectName).then(function(tableData) {
+                this.setState({ savedTables: tableData.data });
+                console.log("saved results", tableData.data);
+            }.bind(this));
+        }
+  }, 
 
   handleDelete: function(item) {
     console.log("DELETE");
@@ -18,46 +28,49 @@ var TableList = React.createClass({
     // Delete!
     helpers.deleteSavedTable(item.name, item.project).then(function() {
 
-      // Get the revised list!
-      helpers.getSavedTables().then(function(tableData) {
-        this.setState({ savedTables: tableData.data });
-        console.log("saved results", tableData.data);
-      }.bind(this));
+      console.log("deleted");
+      
+      //this.handleRefresh();
 
     }.bind(this));
+    this.props.changeState("delete" + item.name);
   },
 
   handleCreate: function() {
-    console.log("TABLE CREATE INITIATED");
+    if (this.props.projectName !== "") {
+        console.log("TABLE CREATE INITIATED");
 
-    // bring up table create form in editzone
-    this.props.changeState("table");
+        // bring up table create form in editzone
+        this.props.changeState("table");
+    }
   },
 
   handleSelect: function(item) {
     console.log("TABLE SELECTED");
 
     // bring up project as selected
-    this.props.changeTable(item.name);
+    this.props.changeState("tableViewer");
+    this.props.changeTable(item);
   },
-
-  handleTemp: function() {
-    helpers.getSavedTables(this.props.projectName).then(function(tableData) {
-      this.setState({ savedTables: tableData.data });
-      console.log("saved results", tableData.data);
-    }.bind(this));
+  
+  handleRefresh: function() {
+      helpers.getSavedTables(this.props.projectName).then(function(tableData) {
+            this.setState({ savedTables: tableData.data });
+            console.log("saved results", tableData.data);
+      }.bind(this));
   },
 
   // Here we render the function
   renderContainer: function() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">
+        <div id="headback" className="panel-heading">
           <h3 className="panel-title text-center">Tables</h3>
-          <button style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleTemp()}>#</button>
-          <button style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleCreate()}>+</button>
+          <button id="bottomPlus" style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleCreate()}>
+              <i className="fa fa-plus-square" aria-hidden="true"></i>
+          </button>
         </div>
-        <div className="panel-body text-center bot-tier">
+        <div className="panel-body text-center bot-tier scroller">
           {this.renderTables()}
         </div>
       </div>
@@ -68,8 +81,10 @@ var TableList = React.createClass({
     return this.state.savedTables.map(function(table, index) {
       return (
         <div key={index}>
-            <p onClick={() => this.handleSelect(table)}>{table.name}</p>
-            <button style={{float: "right"}} className="btn btn-primary deleter" onClick={() => this.handleDelete(table)}>X</button>
+            <p className="basicListItem" onClick={() => this.handleSelect(table)}>{table.name}</p>
+            <button style={{float: "right"}} className="btn btn-primary deleter" onClick={() => this.handleDelete(table)}>
+                <i className="fa fa-trash" aria-hidden="true"></i>
+            </button>
             <hr />
         </div>
       );

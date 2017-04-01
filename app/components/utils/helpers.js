@@ -76,11 +76,13 @@ var helpers = {
     });
   },
   // This will remove saved people from our database
-  deleteSavedPerson: function(firstName, lastName) {
+  deleteSavedPerson: function(firstName, lastName, table, project) {
     return axios.delete("/api/saved/people", {
       params: {
         "firstName": firstName,
-        "lastName": lastName
+        "lastName": lastName,
+        "table": table,
+        "project": project
       }
     })
     .then(function(results) {

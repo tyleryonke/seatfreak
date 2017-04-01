@@ -11,20 +11,27 @@ var ProjectSelect = React.createClass({
     return { savedProjects: [] };
   },
 
-  handleClick: function(item) {
-    console.log("CLICKED");
+  componentWillReceiveProps: function(nextProps) {
+    if(JSON.stringify(this.props) !== JSON.stringify(nextProps))
+        console.log("props changed");
+        {
+            helpers.getSavedProjects().then(function(projectData) {
+                this.setState({ savedProjects: projectData.data });
+                console.log("saved results", projectData.data);
+            }.bind(this));
+        }
+  }, 
+
+  handleDelete: function(item) {
+    console.log("DELETE");
     console.log(item);
 
     // Delete!
     helpers.deleteSavedProject(item.name).then(function() {
 
-      // Get the revised list!
-      helpers.getSavedProjects().then(function(projectData) {
-        this.setState({ savedProjects: projectData.data });
-        console.log("saved results", projectData.data);
-      }.bind(this));
-
     }.bind(this));
+
+    this.props.changeState("delete" + item.name);
   },
 
   handleCreate: function() {
@@ -41,6 +48,13 @@ var ProjectSelect = React.createClass({
     this.props.changeProj(item.name);
   },
 
+  handleRefresh: function() {
+    helpers.getSavedProjects().then(function(projectData) {
+      this.setState({ savedProjects: projectData.data });
+      console.log("saved results", projectData.data);
+    }.bind(this));
+  },
+
   componentWillMount: function() {
     helpers.getSavedProjects().then(function(projectData) {
       this.setState({ savedProjects: projectData.data });
@@ -52,11 +66,13 @@ var ProjectSelect = React.createClass({
   renderContainer: function() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">
+        <div id="headback" className="panel-heading">
           <h3 className="panel-title text-center">Projects</h3>
-          <button style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleCreate()}>+</button>
+          <button style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleCreate()}>
+              <i className="fa fa-plus-square" aria-hidden="true"></i>
+          </button>
         </div>
-        <div className="panel-body text-center top-tier">
+        <div className="panel-body text-center top-tier scroller">
           {this.renderProjects()}
         </div>
       </div>
@@ -65,13 +81,27 @@ var ProjectSelect = React.createClass({
 
   renderProjects: function() {
     return this.state.savedProjects.map(function(project, index) {
-      return (
-        <div key={index}>
-            <h1 onClick={() => this.handleSelect(project)}>{project.name}</h1>
-            <button style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleClick(project)}>X</button>
-            <hr />
-        </div>
-      );
+      if (project.name !== this.props.projectName) {
+        return (
+            <div key={index}>
+                <h1 className="projItem" onClick={() => this.handleSelect(project)}>{project.name}</h1>
+                <button id="projDeleter" style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleDelete(project)}>
+                    <i className="fa fa-trash" aria-hidden="true"></i>
+                </button>
+                <hr />
+            </div>
+        );
+      } else {
+          return (
+            <div key={index}>
+                <h1 className="projItem selectedProj" onClick={() => this.handleSelect(project)}>{project.name}</h1>
+                <button id="projDeleter" style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleDelete(project)}>
+                    <i className="fa fa-trash" aria-hidden="true"></i>
+                </button>
+                <hr />
+            </div>
+        );
+      }
     }.bind(this));
   },
 

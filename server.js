@@ -131,7 +131,7 @@ app.get("/api/saved/people", function(req, res) {
         var peopleDoc = [];
         // doc[0].tables.map(function(person) {
         //         peopleDoc.push(person);
-
+        if (doc[0]) {
             doc[0].tables.forEach(function(table) {
                 if (table.people) {  
                     table.people.forEach(function(person) {
@@ -139,6 +139,7 @@ app.get("/api/saved/people", function(req, res) {
                     })
                 }
             });
+        }
         //});
         res.send(peopleDoc);
       }
@@ -188,16 +189,39 @@ app.post("/api/saved/projects", function(req, res) {
 // Route to add a person to saved list
 app.post("/api/saved/people", function(req, res) {
   var newPerson = new Person(req.body);
+  //var tableVar = "";
 
-  console.log(req.body);
+  Project.find({ name: req.body.project }).exec(function(err, doc) {
 
-  Project.update({ name: req.body.project }, { $push: { "tables": { name: req.body.table }, people: newPerson } }, function(err, status) {
-        if (err) {
-            res.send('fail');
-        } else {
-            res.send('pass');
+      if (err) {
+        console.log(err);
+      }
+      else {
+        var tableArr = doc[0].tables;
+        function findTable(element) {
+            return element.name === req.body.table;
         }
+        var tableVar = tableArr.indexOf(tableArr.find(findTable))
+        console.log("index: " + tableVar);
+        
+           console.log(req.body);
+           var saveLocation = "tables." + tableVar + ".people";
+           var query = {};
+
+           query[saveLocation] = newPerson;
+           console.log(saveLocation);
+
+           Project.update({ name: req.body.project }, { $push: query }, function(err, status) {
+                if (err) {
+                    res.send('fail');
+                } else {
+                    res.send('pass');
+                }
+           });
+      }
   });
+
+
 });
 
 // Route to add a table to saved list
@@ -208,9 +232,9 @@ app.post("/api/saved/tables", function(req, res) {
 
   Project.update({ name: req.body.project }, { $push: { tables: newTable } }, function(err, status) {
         if (err) {
-            res.send('fail');
+            console.log("fail: " + err);
         } else {
-            res.send('pass');
+            console.log('pass' + status);
         }
   });
 });
@@ -225,7 +249,7 @@ app.delete("/api/saved/projects", function(req, res) {
       console.log(err);
     }
     else {
-      res.send("Deleted");
+      console.log("Deleted");
     }
   });
 });
@@ -233,17 +257,44 @@ app.delete("/api/saved/projects", function(req, res) {
 // Route to delete a person from saved list
 app.delete("/api/saved/people", function(req, res) {
 
-  var firstName = req.param("firstName");
-  var lastName = req.param("lastName");
+       var firstName = req.param("firstName");
+       var lastName = req.param("lastName");
+       var table = req.param("table");
+       var project = req.param("project");
 
-  Person.find({ firstName: firstName, lastName: lastName }).remove().exec(function(err) {
-    if (err) {
-      console.log(err);
-    }
-    else {
-      res.send("Deleted");
-    }
+    Project.find({ name: project }).exec(function(err, doc) {
+        console.log("doc: "+ doc);
+      if (err) {
+        console.log(err);
+      }
+      else if (doc[0]) {
+        var tableArr = doc[0].tables;
+        function findTable(element) {
+            return element.name === table;
+        }
+        var tableVar = tableArr.indexOf(tableArr.find(findTable));
+        console.log("index: " + tableVar);
+        
+            if (tableVar == -1) {tableVar = "0";}
+           console.log(req.body);
+           var deleteLocation = "tables." + tableVar + ".people";
+           var deletePerson = {firstName: firstName, lastName: lastName};
+           var query = {};
+
+           query[deleteLocation] = deletePerson;
+           console.log(deleteLocation);
+
+           Project.update({ name: project }, { $pull: query }, function(err, status) {
+                if (err) {
+                    console.log('fail');
+                }
+                else {
+                    console.log("succeed")
+                }
+           });
+      }
   });
+
 // for reference
 //   Project.update({ name: project }, { $pull: { tables: { name: name } } }, function(err, status) {
 //         if (err) {
@@ -272,8 +323,6 @@ app.delete("/api/saved/tables", function(req, res) {
   Project.update({ name: project }, { $pull: { tables: { name: name } } }, function(err, status) {
         if (err) {
             res.send('fail');
-        } else {
-            res.send('pass');
         }
   });
 });

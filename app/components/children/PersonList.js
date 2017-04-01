@@ -8,40 +8,52 @@ var helpers = require("../utils/helpers");
 var PersonList = React.createClass({
 
   getInitialState: function() {
-    return { savedPersons: [] };
+    return { savedPersons: [], lastTask: "" };
   },
+
+
+  componentWillReceiveProps: function(nextProps) {
+    if(JSON.stringify(this.props) !== JSON.stringify(nextProps))
+        {
+            helpers.getSavedPersons(nextProps.projectName).then(function(personData) {
+                this.setState({ savedPersons: personData.data });
+                console.log("saved results", personData.data);
+            }.bind(this));
+        }
+  }, 
 
   handleDelete: function(item) {
     console.log("DELETING");
     console.log(item);
 
     // Delete!
-    helpers.deleteSavedPerson(item.name).then(function() {
-
-      // Get the revised list!
-      helpers.getSavedPersons().then(function(personData) {
-        this.setState({ savedPersons: personData.data });
-        console.log("saved results", personData.data);
-      }.bind(this));
+    helpers.deleteSavedPerson(item.firstName, item.lastName, item.table, item.project).then(function() {
+      console.log("deleted");
+      //this.handleRefresh();
 
     }.bind(this));
+    this.props.changeState("delete" + item.firstName);
   },
 
   handleCreate: function() {
-    console.log("PERSON CREATE INITIATED");
+      console.log("clicked");
+    if (this.props.projectName !== "") {
+        console.log("PERSON CREATE INITIATED");
 
-    // bring up person create form in editzone
-    this.props.changeState("person");
+        // bring up person create form in editzone
+        this.props.changeState("person");
+    }
   },
 
   handleSelect: function(item) {
     console.log("PERSON SELECTED");
 
     // bring up project as selected
-    this.props.changePerson(item.firstName + item.lastName);
+    this.props.changeState("personViewer");
+    this.props.changePerson(item);
   },
 
-  handleTemp: function() {
+  handleRefresh: function() {
     helpers.getSavedPersons(this.props.projectName).then(function(personData) {
       this.setState({ savedPersons: personData.data });
       console.log("saved results", personData.data);
@@ -59,12 +71,13 @@ var PersonList = React.createClass({
   renderContainer: function() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">
+        <div id="headback" className="panel-heading">
           <h3 className="panel-title text-center">People</h3>
-          <button style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleTemp()}>#</button>
-          <button style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleCreate()}>+</button>
+          <button id="bottomPlus" style={{float: "right"}} className="btn btn-primary" onClick={() => this.handleCreate()}>
+              <i className="fa fa-plus-square" aria-hidden="true"></i>
+          </button>
         </div>
-        <div className="panel-body text-center bot-tier">
+        <div className="panel-body text-center bot-tier scroller">
           {this.renderPersons()}
         </div>
       </div>
@@ -75,8 +88,10 @@ var PersonList = React.createClass({
     return this.state.savedPersons.map(function(person, index) {
       return (
         <div key={index}>
-            <p onClick={() => this.handleSelect(person)}>{person.firstName} {person.lastName}</p>
-            <button style={{float: "right"}} className="btn btn-primary deleter" onClick={() => this.handleDelete(person)}>X</button>
+            <p className="basicListItem" onClick={() => this.handleSelect(person)}>{person.firstName} {person.lastName}</p>
+            <button style={{float: "right"}} className="btn btn-primary deleter" onClick={() => this.handleDelete(person)}>
+                <i className="fa fa-trash" aria-hidden="true"></i>
+            </button>
             <hr />
         </div>
       );
