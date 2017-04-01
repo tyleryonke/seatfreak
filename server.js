@@ -19,10 +19,10 @@ var Project = require("./app/models/project");
 var Person = require("./app/models/person");
 var Table = require("./app/models/table");
 
-var configDB = require('./config/database.js');
+// var configDB = require('./config/database.js');
 
 // configuration ===============================================================
-mongoose.connect(configDB.url); // connect to our database
+mongoose.connect("mongodb://heroku_0pn4q1bg:codsml6qqv82s1251vtujjqsfg@ds149030.mlab.com:49030/heroku_0pn4q1bg"); // connect to our database
 var db = mongoose.connection;
 
 db.on("error", function(err) {
