@@ -15,9 +15,9 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 
 // Require Schema
-var Project = require("./app/models/Project");
-var Person = require("./app/models/Person");
-var Table = require("./app/models/Table");
+var Project = require("./app/models/project");
+var Person = require("./app/models/person");
+var Table = require("./app/models/table");
 
 var configDB = require('./config/database.js');
 
