@@ -55,50 +55,50 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes =======================================================================
 
-// auth routes ===============================================================
+// // auth routes ===============================================================
 
-    // show the login links
-    app.get('/', function(req, res) {
-        res.sendFile(__dirname + '/loginpages/landing.html');
-    });
+//     // show the login links
+//     app.get('/', function(req, res) {
+//         res.sendFile(__dirname + '/loginpages/landing.html');
+//     });
 
-    // PROFILE SECTION =========================
-    app.get('/profile', isLoggedIn, function(req, res) {
-        res.redirect('/index');
-    });
+//     // PROFILE SECTION =========================
+//     app.get('/profile', isLoggedIn, function(req, res) {
+//         res.redirect('/index');
+//     });
 
-    // LOGOUT ==============================
-    app.get('/logout', function(req, res) {
-        req.logout();
-        res.redirect('/');
-    });
+//     // LOGOUT ==============================
+//     app.get('/logout', function(req, res) {
+//         req.logout();
+//         res.redirect('/');
+//     });
 
-// =============================================================================
-// AUTHENTICATE (FIRST LOGIN) ==================================================
-// =============================================================================
+// // =============================================================================
+// // AUTHENTICATE (FIRST LOGIN) ==================================================
+// // =============================================================================
 
-        // LOGIN ===============================
-        app.post('/login', passport.authenticate('local-login', {
-            successRedirect : '/index', // redirect to the secure profile section
-            failureRedirect : '/', // redirect back to the signup page if there is an error
-            failureFlash : true // allow flash messages
-        }));
+//         // LOGIN ===============================
+//         app.post('/login', passport.authenticate('local-login', {
+//             successRedirect : '/index', // redirect to the secure profile section
+//             failureRedirect : '/', // redirect back to the signup page if there is an error
+//             failureFlash : true // allow flash messages
+//         }));
 
-        // SIGNUP =================================
-        app.post('/signup', passport.authenticate('local-signup', {
-            successRedirect : '/index', // redirect to the secure profile section
-            failureRedirect : '/', // redirect back to the signup page if there is an error
-            failureFlash : true // allow flash messages
-        }));
+//         // SIGNUP =================================
+//         app.post('/signup', passport.authenticate('local-signup', {
+//             successRedirect : '/index', // redirect to the secure profile section
+//             failureRedirect : '/', // redirect back to the signup page if there is an error
+//             failureFlash : true // allow flash messages
+//         }));
 
 
-// route middleware to ensure user is logged in
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated())
-        return next();
+// // route middleware to ensure user is logged in
+// function isLoggedIn(req, res, next) {
+//     if (req.isAuthenticated())
+//         return next();
 
-    res.redirect('/');
-}
+//     res.redirect('/');
+// }
 
 // Route to get all saved projects
 app.get("/api/saved/projects", function(req, res) {
@@ -328,7 +328,7 @@ app.delete("/api/saved/tables", function(req, res) {
 });
 
 // Any non API GET routes will be directed to our React App and handled by React Router
-app.get("/index", function(req, res) {
+app.get("/", function(req, res) {
   res.sendFile(__dirname + "/public/index.html");
 });
 
